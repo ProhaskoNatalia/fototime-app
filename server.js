@@ -3,41 +3,48 @@ import cors from "cors";
 import multer from "multer";
 
 const app = express();
-const upload = multer({ storage: multer.memoryStorage() });
+
+// ⚠️ ВАЖНО — именно memoryStorage
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // до 10MB
+});
 
 app.use(cors());
 app.use(express.json());
 
 app.post("/generate", upload.single("image"), async (req, res) => {
   try {
-    console.log("=== НОВЫЙ ЗАПРОС ===");
+    console.log("=== REQUEST ===");
 
     if (!req.file) {
-      return res.status(400).json({ error: "Нет файла" });
+      console.log("❌ нет файла");
+      return res.status(400).json({ error: "Файл не пришёл" });
     }
 
-    const gender = req.body.gender;
-    const style = req.body.style;
+    console.log("✅ файл есть:", req.file.originalname);
+    console.log("size:", req.file.size);
+
+    const { gender, style } = req.body;
 
     console.log("gender:", gender);
     console.log("style:", style);
-    console.log("file size:", req.file.size);
 
-    // пока просто тест
+    // просто тест ответ
     return res.json({
       success: true,
       message: `OK: ${gender} + ${style}`
     });
 
-  } catch (e) {
-    console.error("SERVER ERROR:", e);
-    return res.status(500).json({ error: "Ошибка сервера" });
+  } catch (err) {
+    console.error("🔥 SERVER CRASH:", err);
+    return res.status(500).json({ error: "Краш сервера" });
   }
 });
 
 app.get("/", (req, res) => {
-  res.send("Server работает 🚀");
+  res.send("OK");
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log("Server started"));
+app.listen(PORT, () => console.log("SERVER RUNNING"));
