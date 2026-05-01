@@ -34,10 +34,8 @@ app.post("/generate", upload.single("image"), async (req, res) => {
   body: JSON.stringify({
     model: "stability-ai/stable-diffusion",
     input: {
-      prompt: prompt,
-      image: `data:image/jpeg;base64,${base64}`,
-      strength: 0.8
-    }
+  prompt: prompt
+}
   })
 });
 
