@@ -30,14 +30,13 @@ app.post("/generate", upload.single("image"), async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        // модель (стабильная)
-        version: "db21e45c...a1", 
-        input: {
-          prompt: prompt,
-          image: `data:image/jpeg;base64,${base64}`
-        }
-      })
-    });
+  version: "ac732df83cea7fffac3b2c0c578c7c93e2a98c2c58f0bdf4ef8a7e6a2dff0a97",
+  input: {
+    prompt: prompt,
+    init_image: `data:image/jpeg;base64,${base64}`,
+    strength: 0.7
+  }
+})
 
     const data = await response.json();
 
@@ -64,7 +63,7 @@ app.post("/generate", upload.single("image"), async (req, res) => {
     if (result.status === "failed") {
       return res.status(500).json({ error: "Генерация не удалась" });
     }
-
+console.log("RESULT:", result);
     return res.json({
       success: true,
       image: result.output[0]
