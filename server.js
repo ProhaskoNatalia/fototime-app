@@ -15,26 +15,25 @@ app.use(express.json());
 
 app.post("/generate", upload.single("image"), async (req, res) => {
   try {
-    console.log("=== REQUEST ===");
+    console.log("Файл:", req.file);
+    console.log("Данные:", req.body);
 
     if (!req.file) {
-      console.log("❌ нет файла");
-      return res.status(400).json({ error: "Файл не пришёл" });
+      return res.status(400).json({ error: "Нет файла" });
     }
 
-    console.log("✅ файл есть:", req.file.originalname);
-    console.log("size:", req.file.size);
-
-    const { gender, style } = req.body;
-
-    console.log("gender:", gender);
-    console.log("style:", style);
-
-    // просто тест ответ
+    // пока просто тест
     return res.json({
       success: true,
-      message: `OK: ${gender} + ${style}`
+      message: "Сервер работает 🔥"
     });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Ошибка сервера" });
+  }
+});
+
 
   } catch (err) {
     console.error("🔥 SERVER CRASH:", err);
