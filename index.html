@@ -20,9 +20,25 @@
       margin-bottom: 10px;
     }
 
-    p {
-      color: #666;
-      margin-bottom: 20px;
+    .card {
+      margin: 12px auto;
+      width: 90%;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+    }
+
+    .card p {
+      margin: 10px;
+      font-weight: 500;
     }
 
     .btn {
@@ -36,16 +52,11 @@
       cursor: pointer;
       background: linear-gradient(90deg,#2c83ed,#6a5cea);
       color: white;
-      font-weight: 500;
     }
 
     .secondary {
       background: #f3f4f6;
       color: #111;
-    }
-
-    .hidden {
-      display: none;
     }
 
     input {
@@ -57,7 +68,6 @@
 <body>
 
 <h1>✨ Fototime AI</h1>
-<p>Создай уникальное фото за 1 минуту</p>
 
 <div id="step1">
   <h3>Выбери персонажа 👇</h3>
@@ -67,23 +77,36 @@
   <button class="btn" onclick="selectGender('Жених')">🤵 Жених</button>
 </div>
 
-<div id="step2" class="hidden">
+<div id="step2" style="display:none;">
   <h3>Выбери стиль 👇</h3>
-  <button class="btn" onclick="selectStyle('Киберпанк')">⚡ Киберпанк</button>
-  <button class="btn" onclick="selectStyle('СССР')">🏛 Назад в СССР</button>
-  <button class="btn" onclick="selectStyle('Будущее')">🌆 Город будущего</button>
+
+  <div class="card" onclick="selectStyle('Киберпанк')">
+    <img src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81" />
+    <p>⚡ Киберпанк</p>
+  </div>
+
+  <div class="card" onclick="selectStyle('СССР')">
+    <img src="https://images.unsplash.com/photo-1558981403-c5f9891a0d2e" />
+    <p>🏛 Назад в СССР</p>
+  </div>
+
+  <div class="card" onclick="selectStyle('Будущее')">
+    <img src="https://images.unsplash.com/photo-1526401485004-2fa806b7c0d9" />
+    <p>🌆 Город будущего</p>
+  </div>
+
   <button class="btn secondary" onclick="backToGender()">⬅️ Назад</button>
 </div>
 
-<div id="step3" class="hidden">
+<div id="step3" style="display:none;">
   <h3>Загрузи фото 📸</h3>
   <input type="file" id="photoInput" accept="image/*"/>
-  <button class="btn" onclick="sendData()">Отправить</button>
+
+  <button class="btn" onclick="sendData()">Создать фото</button>
   <button class="btn secondary" onclick="backToStyle()">⬅️ Назад</button>
 </div>
 
 <script>
-  // 👇 ВАЖНО ДЛЯ TELEGRAM
   Telegram.WebApp.ready();
   Telegram.WebApp.expand();
 
@@ -116,17 +139,16 @@
     const fileInput = document.getElementById("photoInput");
 
     if (!fileInput.files.length) {
-      alert("Пожалуйста, загрузи фото");
+      alert("Загрузи фото");
       return;
     }
 
-    const data = {
-      gender: gender,
-      style: style
-    };
+    alert(`Генерация: ${gender} + ${style}`);
 
-    Telegram.WebApp.sendData(JSON.stringify(data));
-    Telegram.WebApp.close();
+    Telegram.WebApp.sendData(JSON.stringify({
+      gender,
+      style
+    }));
   }
 </script>
 
