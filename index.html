@@ -136,34 +136,43 @@
   }
 
   async function sendData() {
-    const fileInput = document.getElementById("photoInput");
+  const fileInput = document.getElementById("photoInput");
 
-    if (!fileInput.files.length) {
-      alert("Загрузи фото");
-      return;
-    }
+  if (!fileInput.files.length) {
+    alert("Загрузи фото");
+    return;
+  }
 
+  try {
     const formData = new FormData();
     formData.append("image", fileInput.files[0]);
     formData.append("gender", gender);
     formData.append("style", style);
 
-    try {
-      const response = await fetch("https://fototime-app-production.up.railway.app/generate", {
-        method: "POST",
-        body: formData
-      });
+    const response = await fetch("https://fototime-app-production.up.railway.app/generate", {
+      method: "POST",
+      body: formData
+    });
 
-      const result = await response.json();
+    console.log("STATUS:", response.status);
 
-      alert("🔥 Фото создано");
-      console.log(result);
+    const text = await response.text();
+    console.log("RAW RESPONSE:", text);
 
-    } catch (error) {
-      alert("Ошибка 😢");
-      console.error(error);
+    if (!response.ok) {
+      alert("Ошибка сервера: " + text);
+      return;
     }
+
+    const result = JSON.parse(text);
+
+    alert("Готово 🚀\n" + result.message);
+
+  } catch (err) {
+    console.error("FETCH ERROR:", err);
+    alert("Ошибка сети 😢 (смотри консоль)");
   }
+}
 </script>
 
 </body>
