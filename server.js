@@ -3,28 +3,35 @@ import cors from "cors";
 import multer from "multer";
 
 const app = express();
-const upload = multer();
+const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
+app.use(express.json());
 
 app.post("/generate", upload.single("image"), async (req, res) => {
   try {
-    const { gender, style } = req.body;
+    console.log("=== НОВЫЙ ЗАПРОС ===");
 
-    console.log("Получено:");
+    if (!req.file) {
+      return res.status(400).json({ error: "Нет файла" });
+    }
+
+    const gender = req.body.gender;
+    const style = req.body.style;
+
     console.log("gender:", gender);
     console.log("style:", style);
-    console.log("file:", req.file ? "есть" : "нет");
+    console.log("file size:", req.file.size);
 
-    // 🔥 пока просто тестовый ответ
+    // пока просто тест
     return res.json({
       success: true,
-      message: `Генерация: ${gender} + ${style}`
+      message: `OK: ${gender} + ${style}`
     });
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Ошибка сервера" });
+  } catch (e) {
+    console.error("SERVER ERROR:", e);
+    return res.status(500).json({ error: "Ошибка сервера" });
   }
 });
 
