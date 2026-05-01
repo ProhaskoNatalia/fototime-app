@@ -22,19 +22,44 @@ app.post("/generate", upload.single("image"), async (req, res) => {
       return res.status(400).json({ error: "Нет файла" });
     }
 
+    // переводим фото в base64
+    const base64 = req.file.buffer.toString("base64");
+
+    // запрос в нейросеть
+    const response = await fetch("https://api.neuralsolutions.online/v1/generate", {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer a7955f38-99e0-40ae-b870-1fa861d8ae78",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        image: base64,
+        gender: req.body.gender,
+        style: req.body.style
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Ошибка API:", data);
+      return res.status(500).json({ error: "Ошибка нейросети" });
+    }
+
     return res.json({
       success: true,
-      message: "Сервер работает 🔥"
+      image: data.image
     });
 
   } catch (e) {
-    console.error("Ошибка:", e);
+    console.error("Ошибка сервера:", e);
     return res.status(500).json({ error: "Ошибка сервера" });
   }
 });
 
+// проверка сервера
 app.get("/", (req, res) => {
-  res.send("OK");
+  res.send("Server is working 🚀");
 });
 
 const PORT = process.env.PORT || 8080;
