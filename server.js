@@ -1,80 +1,66 @@
 import express from "express";
 import cors from "cors";
 import multer from "multer";
+import fetch from "node-fetch";
 
 const app = express();
-
-// 🔥 Настройка загрузки файла в память
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }
-});
 
 app.use(cors());
 app.use(express.json());
 
-// 🚀 Главный endpoint генерации
+// память для загрузки фото
+const upload = multer({
+  storage: multer.memoryStorage()
+});
+
 app.post("/generate", upload.single("image"), async (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "Нет файла" });
-    }
+    const { gender, style } = req.body;
 
-    const base64 = req.file.buffer.toString("base64");
+    // 🔥 формируем промпт
+    const prompt = `
+    portrait of a ${gender} in style ${style},
+    high quality, realistic, studio lighting, photobooth style
+    `;
 
-    const prompt = `${req.body.gender}, стиль: ${req.body.style}, высокое качество, реалистичное фото`;
-
-    // 🔥 Запрос к Replicate
-    const response = await fetch("https://api.replicate.com/v1/predictions", {
-  method: "POST",
-  headers: {
-    "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    model: "stability-ai/stable-diffusion",
-    input: {
-  prompt: prompt
-}
-  })
-});
+    // 👉 используем OpenAI image generation
+    const response = await fetch("https://api.openai.com/v1/images/generations", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "gpt-image-1",
+        prompt: prompt,
+        size: "1024x1024"
+      })
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Replicate error:", data);
-      return res.status(500).json({ error: "Ошибка Replicate" });
+      console.error(data);
+      return res.status(500).json({ error: "Ошибка генерации" });
     }
-
-    let result = data;
-
-    // ⏳ Ждём генерацию
-    while (result.status !== "succeeded" && result.status !== "failed") {
-      await new Promise(r => setTimeout(r, 2000));
-
-      const check = await fetch(`https://api.replicate.com/v1/predictions/${result.id}`, {
-        headers: {
-          "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`
-        }
-      });
-
-      result = await check.json();
-    }
-
-    if (result.status === "failed") {
-      return res.status(500).json({ error: "Генерация не удалась" });
-    }
-
-    console.log("RESULT:", result);
 
     return res.json({
       success: true,
-      image: result.output[0]
+      image: data.data[0].url
     });
 
-  } catch (e) {
-    console.error("SERVER ERROR:", e);
+  } catch (err) {
+    console.error(err);
     return res.status(500).json({ error: "Ошибка сервера" });
+  }
+});
+
+app.get("/", (req, res) => {
+  res.send("Fototime AI server работает 🚀");
+});
+
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => console.log("SERVER RUNNING"));    return res.status(500).json({ error: "Ошибка сервера" });
   }
 });
 
