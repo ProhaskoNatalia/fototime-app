@@ -8,22 +8,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// память для загрузки фото
+// 📸 загрузка файла в память
 const upload = multer({
   storage: multer.memoryStorage()
 });
 
+// 🚀 ГЕНЕРАЦИЯ
 app.post("/generate", upload.single("image"), async (req, res) => {
   try {
     const { gender, style } = req.body;
 
-    // 🔥 формируем промпт
     const prompt = `
     portrait of a ${gender} in style ${style},
     high quality, realistic, studio lighting, photobooth style
     `;
 
-    // 👉 используем OpenAI image generation
     const response = await fetch("https://api.openai.com/v1/images/generations", {
       method: "POST",
       headers: {
@@ -40,7 +39,7 @@ app.post("/generate", upload.single("image"), async (req, res) => {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error(data);
+      console.error("OPENAI ERROR:", data);
       return res.status(500).json({ error: "Ошибка генерации" });
     }
 
@@ -50,23 +49,14 @@ app.post("/generate", upload.single("image"), async (req, res) => {
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("SERVER ERROR:", err);
     return res.status(500).json({ error: "Ошибка сервера" });
   }
 });
 
+// 🧪 проверка
 app.get("/", (req, res) => {
   res.send("Fototime AI server работает 🚀");
-});
-
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log("SERVER RUNNING"));    return res.status(500).json({ error: "Ошибка сервера" });
-  }
-});
-
-// 🧪 Проверка сервера
-app.get("/", (req, res) => {
-  res.send("AI server running 🚀");
 });
 
 const PORT = process.env.PORT || 8080;
