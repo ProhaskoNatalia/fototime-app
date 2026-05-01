@@ -4,10 +4,10 @@ import multer from "multer";
 
 const app = express();
 
-// ⚠️ ВАЖНО — именно memoryStorage
+// загрузка файла в память
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } // до 10MB
+  limits: { fileSize: 10 * 1024 * 1024 }
 });
 
 app.use(cors());
@@ -22,22 +22,14 @@ app.post("/generate", upload.single("image"), async (req, res) => {
       return res.status(400).json({ error: "Нет файла" });
     }
 
-    // пока просто тест
     return res.json({
       success: true,
       message: "Сервер работает 🔥"
     });
 
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Ошибка сервера" });
-  }
-});
-
-
-  } catch (err) {
-    console.error("🔥 SERVER CRASH:", err);
-    return res.status(500).json({ error: "Краш сервера" });
+    console.error("Ошибка:", e);
+    return res.status(500).json({ error: "Ошибка сервера" });
   }
 });
 
