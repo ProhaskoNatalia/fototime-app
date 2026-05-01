@@ -32,13 +32,14 @@ app.post("/generate", upload.single("image"), async (req, res) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        version: "ac732df83cea7fffac3b2c0c578c7c93e2a98c2c58f0bdf4ef8a7e6a2dff0a97",
-        input: {
-          prompt: prompt,
-          init_image: `data:image/jpeg;base64,${base64}`,
-          strength: 0.7
-        }
-      })
+  version: "db21e45e0c1d8c7c1c6d1c6dcb2d68a1bdf6ebadc177a64e1242d5e6f27bb1e1",
+  input: {
+    prompt: prompt,
+    image: `data:image/jpeg;base64,${base64}`,
+    strength: 0.8,
+    num_inference_steps: 30
+  }
+})
     });
 
     const data = await response.json();
