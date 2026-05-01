@@ -83,29 +83,33 @@
 </div>
 
 <script>
+  // 👇 ВАЖНО ДЛЯ TELEGRAM
+  Telegram.WebApp.ready();
+  Telegram.WebApp.expand();
+
   let gender = "";
   let style = "";
 
   function selectGender(g) {
     gender = g;
-    document.getElementById("step1").classList.add("hidden");
-    document.getElementById("step2").classList.remove("hidden");
+    document.getElementById("step1").style.display = "none";
+    document.getElementById("step2").style.display = "block";
   }
 
   function selectStyle(s) {
     style = s;
-    document.getElementById("step2").classList.add("hidden");
-    document.getElementById("step3").classList.remove("hidden");
+    document.getElementById("step2").style.display = "none";
+    document.getElementById("step3").style.display = "block";
   }
 
   function backToGender() {
-    document.getElementById("step2").classList.add("hidden");
-    document.getElementById("step1").classList.remove("hidden");
+    document.getElementById("step2").style.display = "none";
+    document.getElementById("step1").style.display = "block";
   }
 
   function backToStyle() {
-    document.getElementById("step3").classList.add("hidden");
-    document.getElementById("step2").classList.remove("hidden");
+    document.getElementById("step3").style.display = "none";
+    document.getElementById("step2").style.display = "block";
   }
 
   function sendData() {
