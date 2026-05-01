@@ -26,21 +26,20 @@ app.post("/generate", upload.single("image"), async (req, res) => {
 
     // 🔥 Запрос к Replicate
     const response = await fetch("https://api.replicate.com/v1/predictions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-  version: "db21e45e0c1d8c7c1c6d1c6dcb2d68a1bdf6ebadc177a64e1242d5e6f27bb1e1",
-  input: {
-    prompt: prompt,
-    image: `data:image/jpeg;base64,${base64}`,
-    strength: 0.8,
-    num_inference_steps: 30
-  }
-})
-    });
+  method: "POST",
+  headers: {
+    "Authorization": `Token ${process.env.REPLICATE_API_TOKEN}`,
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    model: "stability-ai/stable-diffusion",
+    input: {
+      prompt: prompt,
+      image: `data:image/jpeg;base64,${base64}`,
+      strength: 0.8
+    }
+  })
+});
 
     const data = await response.json();
 
